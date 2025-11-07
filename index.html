@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="event-form">
+    <input type="text" name="title" required>
+    <textarea name="description"></textarea>
+    <input type="datetime-local" name="start_date">
+    <button type="submit">Submit Event</button>
+</form>
+
+<script>
+document.querySelector('#event-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    const response = await fetch('http://skunkworks.local/wp-json/event-manager/v1/submit', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(Object.fromEntries(formData))
+    });
+    
+    const result = await response.json();
+    alert(result.message);
+});
+</script>
+</body>
+</html>
