@@ -637,7 +637,7 @@ class Event_Manager_Pro
                 .emp-form-group textarea:focus,
                 .emp-form-group select:focus {
                     outline: none;
-                    border-color: #667eea;
+                    border-color: #3fae38;
                 }
 
                 .emp-form-group textarea {
@@ -646,7 +646,7 @@ class Event_Manager_Pro
                 }
 
                 .emp-submit-btn {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
                     color: white;
                     border: none;
                     padding: 15px 40px;
@@ -848,8 +848,9 @@ class Event_Manager_Pro
         }
 
     /**
-     * Upcoming Events List Shortcode
-     * Usage: [upcoming_events limit="5" category="conference"]
+     * Enhanced Upcoming Events List Shortcode
+     * Usage: [upcoming_events limit="5" category="conference" layout="grid" show_switcher="yes"]
+     * Layouts: grid, list, masonry
      */
     public function emp_upcoming_events_shortcode($atts)
         {
@@ -858,6 +859,9 @@ class Event_Manager_Pro
             'category' => '',
             'show_image' => 'yes',
             'show_excerpt' => 'yes',
+            'layout' => 'grid', // grid, list, masonry
+            'show_switcher' => 'yes', // Show layout switcher buttons
+            'columns' => '3', // For grid/masonry: 2, 3, or 4
         ], $atts);
 
         $args = [
@@ -893,62 +897,110 @@ class Event_Manager_Pro
             return '<p>No upcoming events found.</p>';
             }
 
+        $unique_id = 'emp-events-' . uniqid();
         ob_start();
         ?>
-        <div class="emp-upcoming-events">
+        <div class="emp-upcoming-events-container" id="<?php echo esc_attr($unique_id); ?>">
             <style>
-                .emp-upcoming-events {
-                    display: grid;
-                    gap: 30px;
+                .emp-upcoming-events-container {
                     margin: 40px 0;
                 }
 
+                /* Layout Switcher */
+                .emp-layout-switcher {
+                    display: flex;
+                    gap: 10px;
+                    margin-bottom: 30px;
+                    justify-content: flex-end;
+                }
+
+                .emp-layout-btn {
+                    background: #f5f5f5;
+                    border: 2px solid #e0e0e0;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    transition: all 0.3s;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .emp-layout-btn:hover {
+                    background: #e8e8e8;
+                    border-color: #ccc;
+                }
+
+                .emp-layout-btn.active {
+                    background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
+                    color: white;
+                    border-color: #3fae38;
+                }
+
+                /* Base Event Card Styles */
                 .emp-event-card {
-                    display: grid;
-                    grid-template-columns: 200px 1fr;
-                    gap: 20px;
                     background: white;
                     border-radius: 12px;
                     overflow: hidden;
                     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    transition: transform 0.3s;
+                    transition: all 0.3s;
+                    display: flex;
+                    flex-direction: column;
                 }
 
                 .emp-event-card:hover {
                     transform: translateY(-5px);
-                    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                }
+
+                .emp-event-image-wrapper {
+                    width: 100%;
+                    overflow: hidden;
+                    position: relative;
+                    background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
                 }
 
                 .emp-event-image {
-                    width: 200px;
-                    height: 200px;
+                    width: 100%;
+                    height: 100%;
                     object-fit: cover;
+                    transition: transform 0.3s;
+                }
+
+                .emp-event-card:hover .emp-event-image {
+                    transform: scale(1.05);
                 }
 
                 .emp-event-content {
-                    padding: 20px 20px 20px 0;
+                    padding: 25px;
+                    display: flex;
+                    flex-direction: column;
+                    flex-grow: 1;
                 }
 
                 .emp-event-title {
-                    margin: 0 0 10px 0;
-                    font-size: 1.5em;
+                    margin: 0 0 15px 0;
+                    font-size: 1.4em;
+                    line-height: 1.3;
                     color: #333;
                 }
 
                 .emp-event-title a {
-                    color: #667eea;
+                    color: #333;
                     text-decoration: none;
+                    transition: color 0.3s;
                 }
 
                 .emp-event-title a:hover {
-                    text-decoration: underline;
+                    color: #3fae38;
                 }
 
                 .emp-event-meta {
                     display: flex;
-                    gap: 20px;
-                    flex-wrap: wrap;
-                    margin: 10px 0;
+                    flex-direction: column;
+                    gap: 10px;
+                    margin: 15px 0;
                     font-size: 0.9em;
                     color: #666;
                 }
@@ -956,99 +1008,281 @@ class Event_Manager_Pro
                 .emp-event-meta-item {
                     display: flex;
                     align-items: center;
-                    gap: 5px;
+                    gap: 8px;
+                }
+
+                .emp-event-meta-icon {
+                    font-size: 1.1em;
+                    min-width: 20px;
                 }
 
                 .emp-event-excerpt {
                     margin: 15px 0;
                     color: #555;
                     line-height: 1.6;
+                    flex-grow: 1;
+                }
+
+                .emp-event-footer {
+                    margin-top: auto;
+                    padding-top: 15px;
+                    border-top: 1px solid #eee;
                 }
 
                 .emp-event-link {
                     display: inline-block;
-                    background: #667eea;
+                    background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
                     color: white;
-                    padding: 10px 20px;
-                    border-radius: 6px;
+                    padding: 12px 24px;
+                    border-radius: 8px;
                     text-decoration: none;
                     font-weight: 600;
-                    transition: background 0.3s;
+                    transition: all 0.3s;
+                    text-align: center;
                 }
 
                 .emp-event-link:hover {
-                    background: #764ba2;
+                    transform: translateX(5px);
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                }
+
+                /* GRID LAYOUT */
+                .emp-upcoming-events.layout-grid {
+                    display: grid;
+                    gap: 30px;
+                    grid-template-columns: repeat(<?php echo esc_attr($atts['columns']); ?>, 1fr);
+                }
+
+                .layout-grid .emp-event-image-wrapper {
+                    height: 220px;
+                }
+
+                /* LIST LAYOUT */
+                .emp-upcoming-events.layout-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 25px;
+                }
+
+                .layout-list .emp-event-card {
+                    flex-direction: row;
+                }
+
+                .layout-list .emp-event-image-wrapper {
+                    width: 280px;
+                    min-height: 100%;
+                }
+
+                .layout-list .emp-event-content {
+                    flex: 1;
+                }
+
+                .layout-list .emp-event-meta {
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    gap: 15px;
+                }
+
+                /* MASONRY LAYOUT */
+                .emp-upcoming-events.layout-masonry {
+                    column-count:
+                        <?php echo esc_attr($atts['columns']); ?>
+                    ;
+                    column-gap: 30px;
+                }
+
+                .layout-masonry .emp-event-card {
+                    break-inside: avoid;
+                    margin-bottom: 30px;
+                }
+
+                .layout-masonry .emp-event-image-wrapper {
+                    height: auto;
+                    min-height: 200px;
+                }
+
+                .layout-masonry .emp-event-image {
+                    aspect-ratio: 16/9;
+                }
+
+                /* RESPONSIVE */
+                @media (max-width: 1024px) {
+
+                    .emp-upcoming-events.layout-grid,
+                    .emp-upcoming-events.layout-masonry {
+                        grid-template-columns: repeat(2, 1fr);
+                        column-count: 2;
+                    }
                 }
 
                 @media (max-width: 768px) {
-                    .emp-event-card {
+
+                    .emp-upcoming-events.layout-grid,
+                    .emp-upcoming-events.layout-masonry {
                         grid-template-columns: 1fr;
+                        column-count: 1;
                     }
 
-                    .emp-event-image {
+                    .layout-list .emp-event-card {
+                        flex-direction: column;
+                    }
+
+                    .layout-list .emp-event-image-wrapper {
                         width: 100%;
+                        height: 220px;
+                    }
+
+                    .emp-layout-switcher {
+                        justify-content: center;
+                    }
+
+                    .emp-layout-btn {
+                        padding: 8px 15px;
+                        font-size: 0.9em;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .emp-layout-switcher {
+                        flex-wrap: wrap;
                     }
 
                     .emp-event-content {
                         padding: 20px;
                     }
+
+                    .emp-event-title {
+                        font-size: 1.2em;
+                    }
                 }
             </style>
 
-            <?php while ($events->have_posts()):
-                $events->the_post(); ?>
-                <?php
-                $event_id = get_the_ID();
-                $start_date = get_post_meta($event_id, '_event_start_date', true);
-                $location = get_post_meta($event_id, '_event_location', true);
-                $price = get_post_meta($event_id, '_event_price', true);
-                ?>
+            <?php if ($atts['show_switcher'] === 'yes'): ?>
+                <div class="emp-layout-switcher">
+                    <button class="emp-layout-btn <?php echo $atts['layout'] === 'grid' ? 'active' : ''; ?>" data-layout="grid">
+                        <span class="emp-layout-icon">⊞</span> Grid
+                    </button>
+                    <button class="emp-layout-btn <?php echo $atts['layout'] === 'list' ? 'active' : ''; ?>" data-layout="list">
+                        <span class="emp-layout-icon">☰</span> List
+                    </button>
+                    <button class="emp-layout-btn <?php echo $atts['layout'] === 'masonry' ? 'active' : ''; ?>"
+                        data-layout="masonry">
+                        <span class="emp-layout-icon">▦</span> Masonry
+                    </button>
+                </div>
+            <?php endif; ?>
 
-                <div class="emp-event-card">
-                    <?php if ($atts['show_image'] === 'yes' && has_post_thumbnail()): ?>
-                        <img src="<?php echo get_the_post_thumbnail_url($event_id, 'medium'); ?>" alt="<?php the_title_attribute(); ?>"
-                            class="emp-event-image">
-                    <?php endif; ?>
+            <div class="emp-upcoming-events layout-<?php echo esc_attr($atts['layout']); ?>">
+                <?php while ($events->have_posts()):
+                    $events->the_post(); ?>
+                    <?php
+                    $event_id = get_the_ID();
+                    $start_date = get_post_meta($event_id, '_event_start_date', true);
+                    $location = get_post_meta($event_id, '_event_location', true);
+                    $price = get_post_meta($event_id, '_event_price', true);
+                    ?>
 
-                    <div class="emp-event-content">
-                        <h3 class="emp-event-title">
-                            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                        </h3>
-
-                        <div class="emp-event-meta">
-                            <?php if ($start_date): ?>
-                                <div class="emp-event-meta-item">
-                                    📅 <?php echo date_i18n('M j, Y @ g:i a', strtotime($start_date)); ?>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($location): ?>
-                                <div class="emp-event-meta-item">
-                                    📍 <?php echo esc_html($location); ?>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($price): ?>
-                                <div class="emp-event-meta-item">
-                                    💰 <?php echo esc_html($price); ?>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <?php if ($atts['show_excerpt'] === 'yes'): ?>
-                            <div class="emp-event-excerpt">
-                                <?php echo wp_trim_words(get_the_excerpt(), 30); ?>
+                    <div class="emp-event-card">
+                        <?php if ($atts['show_image'] === 'yes'): ?>
+                            <div class="emp-event-image-wrapper">
+                                <?php if (has_post_thumbnail()): ?>
+                                    <img src="<?php echo get_the_post_thumbnail_url($event_id, 'large'); ?>"
+                                        alt="<?php the_title_attribute(); ?>" class="emp-event-image">
+                                <?php else: ?>
+                                    <div class="emp-event-image"
+                                        style="background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%); min-height: 220px;"></div>
+                                <?php endif; ?>
                             </div>
                         <?php endif; ?>
 
-                        <a href="<?php the_permalink(); ?>" class="emp-event-link">
-                            View Details →
-                        </a>
+                        <div class="emp-event-content">
+                            <h3 class="emp-event-title">
+                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                            </h3>
+
+                            <div class="emp-event-meta">
+                                <?php if ($start_date): ?>
+                                    <div class="emp-event-meta-item">
+                                        <span class="emp-event-meta-icon">📅</span>
+                                        <span><?php echo date_i18n('M j, Y @ g:i a', strtotime($start_date)); ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ($location): ?>
+                                    <div class="emp-event-meta-item">
+                                        <span class="emp-event-meta-icon">📍</span>
+                                        <span><?php echo esc_html($location); ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ($price): ?>
+                                    <div class="emp-event-meta-item">
+                                        <span class="emp-event-meta-icon">💰</span>
+                                        <span><?php echo esc_html($price); ?></span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <?php if ($atts['show_excerpt'] === 'yes'): ?>
+                                <div class="emp-event-excerpt">
+                                    <?php echo wp_trim_words(get_the_excerpt(), 25); ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="emp-event-footer">
+                                <a href="<?php the_permalink(); ?>" class="emp-event-link">
+                                    View Details →
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            <?php endwhile; ?>
+                <?php endwhile; ?>
+            </div>
 
             <?php wp_reset_postdata(); ?>
+
+            <?php if ($atts['show_switcher'] === 'yes'): ?>
+                <script>
+                    (function () {
+                        const container = document.getElementById('<?php echo esc_js($unique_id); ?>');
+                        const eventsWrapper = container.querySelector('.emp-upcoming-events');
+                        const buttons = container.querySelectorAll('.emp-layout-btn');
+
+                        buttons.forEach(button => {
+                            button.addEventListener('click', function () {
+                                const layout = this.getAttribute('data-layout');
+
+                                // Update active button
+                                buttons.forEach(btn => btn.classList.remove('active'));
+                                this.classList.add('active');
+
+                                // Update layout
+                                eventsWrapper.className = 'emp-upcoming-events layout-' + layout;
+
+                                // Save preference to localStorage
+                                try {
+                                    localStorage.setItem('emp_preferred_layout', layout);
+                                } catch (e) {
+                                    // Ignore localStorage errors
+                                }
+                            });
+                        });
+
+                        // Load saved preference
+                        try {
+                            const savedLayout = localStorage.getItem('emp_preferred_layout');
+                            if (savedLayout) {
+                                const savedButton = container.querySelector(`[data-layout="${savedLayout}"]`);
+                                if (savedButton) {
+                                    savedButton.click();
+                                }
+                            }
+                        } catch (e) {
+                            // Ignore localStorage errors
+                        }
+                    })();
+                </script>
+            <?php endif; ?>
         </div>
         <?php
         return ob_get_clean();

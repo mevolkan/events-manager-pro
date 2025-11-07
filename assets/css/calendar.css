@@ -23,7 +23,7 @@
 }
 
 .emp-calendar-nav button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -62,7 +62,7 @@
 }
 
 .emp-view-btn.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
     color: white;
 }
 
@@ -77,7 +77,7 @@
 }
 
 .emp-calendar-day-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
     color: white;
     text-align: center;
     padding: 15px;
@@ -128,7 +128,7 @@
 }
 
 .emp-calendar-event {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
     color: white;
     padding: 6px 8px;
     border-radius: 4px;
@@ -148,7 +148,7 @@
 
 .emp-calendar-event-more {
     font-size: 0.75em;
-    color: #667eea;
+    color: #3fae38;
     font-weight: 600;
     margin-top: 4px;
     cursor: pointer;
@@ -259,7 +259,7 @@
 
 .emp-modal-event-link {
     display: inline-block;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
     color: white;
     padding: 15px 30px;
     border-radius: 8px;
@@ -281,7 +281,7 @@
 
 .emp-loading-spinner {
     border: 4px solid #f3f3f3;
-    border-top: 4px solid #667eea;
+    border-top: 4px solid #3fae38;
     border-radius: 50%;
     width: 50px;
     height: 50px;
@@ -316,12 +316,12 @@
 .emp-list-event-item:hover {
     transform: translateY(-3px);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    border-color: #667eea;
+    border-color: #3fae38;
 }
 
 .emp-list-event-date {
     font-size: 0.9em;
-    color: #667eea;
+    color: #3fae38;
     font-weight: 700;
     margin-bottom: 10px;
 }
@@ -412,6 +412,6 @@
         left: 50%;
         transform: translateX(-50%);
         font-size: 2em;
-        color: #667eea;
+        color: #3fae38;
     }
 }

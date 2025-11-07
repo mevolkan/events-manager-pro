@@ -31,7 +31,7 @@ $spots_left = $max_attendees ? $max_attendees - count($registrations) : null;
     }
     
     .event-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
         color: white;
         padding: 60px 40px;
         border-radius: 12px;
@@ -93,7 +93,7 @@ $spots_left = $max_attendees ? $max_attendees - count($registrations) : null;
     
     .sidebar-card h3 {
         margin: 0 0 20px 0;
-        color: #667eea;
+        color: #3fae38;
         font-size: 1.3em;
     }
     
@@ -143,11 +143,11 @@ $spots_left = $max_attendees ? $max_attendees - count($registrations) : null;
     
     .form-group input:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: #3fae38;
     }
     
     .btn {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
         color: white;
         border: none;
         padding: 15px 30px;
@@ -236,13 +236,13 @@ $spots_left = $max_attendees ? $max_attendees - count($registrations) : null;
         padding: 6px 15px;
         border-radius: 20px;
         font-size: 0.9em;
-        color: #667eea;
+        color: #3fae38;
         text-decoration: none;
         transition: background 0.3s;
     }
     
     .category-badge:hover {
-        background: #667eea;
+        background: #3fae38;
         color: white;
     }
 </style>

@@ -71,14 +71,33 @@ Display a list of upcoming events:
 
 **Parameters:**
 
+- `layout` - layout of the events grid, list, masonry
+- `columns` - Show number of comuns (default: 3)
 - `limit` - Number of events to show (default: 10)
 - `category` - Filter by category slug
 - `show_image` - Show featured images (default: "yes")
 - `show_excerpt` - Show event excerpts (default: "yes")
+- `show_switcher` - Show layout switcher (default: "yes")
 
 **Example:**
 
 ```
+// Basic usage with grid layout
+[upcoming_events]
+
+// Grid with 4 columns
+[upcoming_events layout="grid" columns="4"]
+
+// List layout without switcher
+[upcoming_events layout="list" show_switcher="no"]
+
+// Masonry with category filter
+[upcoming_events layout="masonry" category="conference" limit="12"]
+
+// Grid with 2 columns, no images
+[upcoming_events layout="grid" columns="2" show_image="no"]
+
+// Limit of 5 in category conference with images 
 [upcoming_events limit="5" category="conference" show_image="yes"]
 ```
 

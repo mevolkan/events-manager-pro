@@ -86,7 +86,7 @@
             text-decoration: none;
         }
         .emp-archive-event-title a:hover {
-            color: #667eea;
+            color: #3fae38;
         }
         .emp-archive-event-date {
             display: flex;
@@ -111,7 +111,7 @@
         }
         .emp-archive-event-link {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3fae38 0%, #3d003b 100%);
             color: white;
             padding: 10px 20px;
             border-radius: 6px;
